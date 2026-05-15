@@ -3,16 +3,18 @@ import json
 import random
 import logging
 from typing import List
+
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+
 import google.generativeai as genai
 
 logging.basicConfig(level=logging.INFO)
 
-
 load_dotenv()
+
 api_key = os.getenv("GEMINI_API_KEY")
 
 if not api_key:
@@ -22,34 +24,30 @@ genai.configure(api_key=api_key)
 
 app = FastAPI()
 
-# CORS whitelist - add your deployment domains here
 ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Vite dev
-    "http://localhost:3000",  # Alternative dev port
-    os.getenv("FRONTEND_URL", "http://localhost:5173"),  # Production frontend URL from env
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://connections-plusplus.vercel.app",
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=False,  # Changed to False - don't send cookies cross-origin
-    allow_methods=["GET", "POST"],  # Only allow needed methods
-    allow_headers=["Content-Type"],  # Only allow needed headers
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 class PuzzleRequest(BaseModel):
-    theme: str = Field(default="General", max_length=100)  # Max 100 chars to prevent abuse
-
+    theme: str = Field(default="General", max_length=100)
 
 class Group(BaseModel):
     category: str
     words: List[str]
     difficulty: int
 
-
 class ConnectionsPuzzle(BaseModel):
     groups: List[Group]
-
 
 SYSTEM_PROMPT = """
 You are an expert puzzle constructor creating a high-quality semantic grouping puzzle inspired by modern newspaper word games.
@@ -97,17 +95,6 @@ CATEGORY NAMING RULES:
 - Prefer human newspaper-style labels
 - Categories should feel satisfying in hindsight
 - Avoid theatrical AI-generated titles
-
-GOOD CATEGORY NAME EXAMPLES:
-- Movie Sequels
-- Editing Techniques
-- Things in a Kitchen
-- Words Before "LINE"
-
-BAD CATEGORY NAME EXAMPLES:
-- Flickering Moments
-- Echoes of Reality
-- Theatrical Deception
 
 Return ONLY raw valid JSON with no markdown, no backticks, no explanation.
 
@@ -159,11 +146,11 @@ def validate_puzzle(puzzle: ConnectionsPuzzle):
     if len(seen_words) != 16:
         raise ValueError("Puzzle must contain exactly 16 unique words")
 
-
 @app.post("/generate-puzzle")
 async def generate_puzzle(data: PuzzleRequest):
 
     theme = data.theme
+
     model = genai.GenerativeModel(
         model_name="gemini-3.1-flash-lite",
         system_instruction=SYSTEM_PROMPT,
@@ -216,41 +203,41 @@ async def generate_puzzle(data: PuzzleRequest):
 
     except json.JSONDecodeError:
         logging.error("Failed to parse JSON from Gemini response")
+
         raise HTTPException(
             status_code=500,
             detail="Puzzle generation failed: Invalid response format",
         )
+
     except ValueError as e:
         logging.error(f"Validation error: {str(e)}")
+
         raise HTTPException(
             status_code=400,
             detail="Puzzle validation failed",
         )
+
     except Exception as e:
         logging.error(f"Unexpected error: {str(e)}")
+
         raise HTTPException(
             status_code=500,
             detail="Puzzle generation failed",
         )
 
-# =========================================
-# ROOT ROUTE
-# =========================================
-
 @app.get("/")
 async def root():
     return {"message": "Connections AI Backend Running"}
 
-# =========================================
-# RUN SERVER
-# =========================================
-
 if __name__ == "__main__":
+
     import uvicorn
-    
-    # Get host from env, default to localhost for security
-    host = os.getenv("HOST", "127.0.0.1")
+
+    host = "0.0.0.0"
     port = int(os.getenv("PORT", 8000))
-    reload = os.getenv("ENVIRONMENT", "development") == "development"
-    
-    uvicorn.run("main:app", host=host, port=port, reload=reload)
+
+    uvicorn.run(
+        "main:app",
+        host=host,
+        port=port,
+    )

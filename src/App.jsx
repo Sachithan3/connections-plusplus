@@ -491,9 +491,9 @@ function App() {
                   disabled={loading}
                 />
                 <motion.button
+                  type="button"
                   onClick={generatePuzzle}
-                  disabled={loading || !theme.trim()}
-                  className="w-full py-4 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400 text-white font-black rounded-lg transition-all tracking-wide uppercase text-base sm:text-lg"
+                  className="w-full py-4 bg-gray-900 hover:bg-gray-800 text-white font-black rounded-lg transition-all tracking-wide uppercase text-base sm:text-lg"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
