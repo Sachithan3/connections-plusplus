@@ -1,16 +1,14 @@
-# React + Vite
+# Connections++
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Connections++ is a themed word-grouping game inspired by the nyt games connections puzzle format. Each round gives you 16 words that hide four different groups of four, and your job is to sort them correctly before you run out of tries. The frontend is built in React and focuses on the game experience, while the FastAPI backend uses Gemini to generate a fresh puzzle from your chosen theme.
 
-Currently, two official plugins are available:
+How it works:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. You enter a theme, or leave it blank for a general puzzle.
+2. The frontend sends that theme to the backend.
+3. Gemini generates four categories with four unique words in each category.
+4. The backend validates the puzzle, uppercases the words, and shuffles the 16-word board.
+5. In the game, you select four words at a time, submit a guess, and get feedback if you were correct or if you were one word away.
+6. When all four groups are solved, the game ends and shows the completed categories.
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Live app: [connectionspp.vercel.app](https://connectionspp.vercel.app)
