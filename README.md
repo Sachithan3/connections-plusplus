@@ -12,3 +12,15 @@ How it works:
 6. When all four groups are solved, the game ends and shows the completed categories.
 
 Live app: [connectionspp.vercel.app](https://connectionspp.vercel.app)
+
+Running it:
+
+Backend:
+
+cd backend
+source myenv/bin/activate
+uvicorn main:app --reload --port 8000
+
+Frontend:
+
+npm run dev
