@@ -261,7 +261,7 @@ function App() {
     setLoading(true)
     setError(null)
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://connections-plusplus-production.up.railway.app'
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://connections-plusplus.onrender.com/'
       const response = await axios.post(`${backendUrl}/generate-puzzle`, {
         theme: selectedTheme
       })
